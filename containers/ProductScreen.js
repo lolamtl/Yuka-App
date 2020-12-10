@@ -28,27 +28,28 @@ export default function ProductScreen(props) {
   const [data, setData] = useState({});
   const [newProduct, setNewProduct] = useState({});
   const { params } = useRoute();
-  const { product, setProduct } = props;
+  // const { product, setProduct } = props;
 
   const saveTheProduct = async (newobject) => {
     const saveCode = await AsyncStorage.getItem("pdt");
     if (saveCode !== null) {
       const saveObject = JSON.parse(saveCode);
 
-      let id = null;
+      let theId = null;
       for (let i = 0; i < saveObject.length; i++) {
-        if (saveObject[i].id === newobject._id) {
-          id = i;
+        if (saveObject[i].id === newobject.product._id) {
+          theId = i;
         }
       }
-      if (id === null) {
+      if (theId === null) {
         const saveProd = {
-          id: newobject._id,
-          brand: newobject.brands,
-          name: newobject.product_name,
-          image: newobject.image_front_url,
-          // nova: newobject.nova_groups,
-          // nutriScore: newobject.nutrition_grades_tags[0],
+          id: newobject.product._id,
+          brand: newobject.product.brands,
+          name: newobject.product.product_name,
+          image: newobject.product.image_url,
+          ecoscore: newobject.product.ecoscore_grade,
+          nutriScore: newobject.product.nutrition_grade_fr,
+          note: newobject.product.nutriscore_score,
           favorite: false,
         };
 
@@ -57,17 +58,18 @@ export default function ProductScreen(props) {
         await AsyncStorage.setItem("pdt", store);
         setNewProduct(saveProd);
       } else {
-        setNewProduct(saveObject[id]);
+        setNewProduct(saveObject[theId]);
       }
     } else {
       let tab = [];
       const saveProd = {
-        id: newobject._id,
-        brand: newobject.brands,
-        name: newobject.product_name,
-        image: newobject.image_front_url,
-        // nova: newobject.nova_groups,
-        // nutriScore: newobject.nutrition_grades_tags[0],
+        id: newobject.product._id,
+        brand: newobject.product.brands,
+        name: newobject.product.product_name,
+        image: newobject.product.image_url,
+        ecoscore: newobject.product.ecoscore_grade,
+        nutriScore: newobject.product.nutrition_grade_fr,
+        note: newobject.product.nutriscore_score,
         favorite: false,
       };
       tab.push(saveProd);
@@ -99,7 +101,7 @@ export default function ProductScreen(props) {
         } else {
           alert("Ca marche pas!");
         }
-        // console.log("loook HERREEEEEEEEE --------------->");
+        console.log("loook HERREEEEEEEEE --------------->");
         // console.log(response.data);
       } catch (error) {
         console.log(error.message);
@@ -107,6 +109,8 @@ export default function ProductScreen(props) {
     };
     fetchData();
   }, []);
+  console.log("NEWPRODUCT", newProduct);
+
   return isLoading ? (
     <View>
       <ActivityIndicator
@@ -130,6 +134,82 @@ export default function ProductScreen(props) {
             <View style={styles.infos}>
               <View style={styles.favoris}>
                 <Text style={styles.text}>{data.product.product_name}</Text>
+              </View>
+              <Text>{data.product.brands}</Text>
+              <View>
+                <View style={styles.grade}>
+                  {data.product.nutrition_grade_fr === "a" ||
+                  data.product.ecoscore_grade === "a" ? (
+                    <View style={styles.grade}>
+                      <FontAwesome name="circle" size={24} color="green" />
+                      <View style={styles.note}>
+                        <Text style={styles.score}>
+                          {data.product.nutriscore_score}/100
+                          <Text>(A REVOIR)</Text>
+                        </Text>
+                        <Text>Excellent!</Text>
+                      </View>
+                    </View>
+                  ) : data.product.nutrition_grade_fr === "b" ||
+                    data.product.ecoscore_grade === "b" ? (
+                    <View style={styles.grade}>
+                      <FontAwesome name="circle" size={24} color="#5DCC71" />
+                      <View style={styles.note}>
+                        <Text style={styles.score}>
+                          {data.product.nutriscore_score ||
+                            data.product.ecoscore_score}
+                          /100
+                          <Text>(A REVOIR)</Text>
+                        </Text>
+                        <Text>Trés bon</Text>
+                      </View>
+                    </View>
+                  ) : data.product.nutrition_grade_fr === "c" ||
+                    data.product.ecoscore_grade === "c" ? (
+                    <View style={styles.grade}>
+                      <FontAwesome name="circle" size={24} color="yellow" />
+                      <View style={styles.note}>
+                        <Text style={styles.score}>
+                          {data.product.nutriscore_score.toFixed(2) ||
+                            data.product.ecoscore_score}
+                          /100
+                          <Text>(A REVOIR)</Text>
+                        </Text>
+                        <Text>Bon</Text>
+                      </View>
+                    </View>
+                  ) : data.product.nutrition_grade_fr === "d" ||
+                    data.product.ecoscore_grade === "d" ? (
+                    <View style={styles.grade}>
+                      <FontAwesome name="circle" size={24} color="orange" />
+                      <View style={styles.note}>
+                        <Text style={styles.score}>
+                          {data.product.nutriscore_score}/100
+                          <Text>(A REVOIR)</Text>
+                        </Text>
+                        <Text>Médiocre</Text>
+                      </View>
+                    </View>
+                  ) : data.product.nutrition_grade_fr === "e" ||
+                    data.product.ecoscore_grade === "e" ? (
+                    <View style={styles.grade}>
+                      <FontAwesome name="circle" size={24} color="#D50506" />
+                      <View style={styles.note}>
+                        <Text style={styles.score}>
+                          {data.product.nutriscore_score}/100
+                          <Text>(A REVOIR)</Text>
+                        </Text>
+                        <Text>Mauvais</Text>
+                      </View>
+                    </View>
+                  ) : data.product.nutrition_grade_fr === "no_value" ||
+                    data.product.nutrition_grade_fr === undefined ? (
+                    <View>
+                      <FontAwesome name="circle" size={24} color="#D1D1D1" />
+                      <Text>Pas de note pour ce produit pour l'instant</Text>
+                    </View>
+                  ) : null}
+                </View>
                 <TouchableOpacity
                   onPress={async () => {
                     const productFavo = await AsyncStorage.getItem("pdt");
@@ -146,94 +226,25 @@ export default function ProductScreen(props) {
                         JSON.stringify(productArray)
                       );
                     }
-                    // setNewProduct({
-                    //   ...thisProduct,
-                    //   favorite: !thisProduct.favorite,
-                    // });
+                    setNewProduct({
+                      ...newProduct,
+                      favorite: !newProduct.favorite,
+                    });
                   }}
-                  style={styles.star}
+                  // style={styles.star}
                 >
-                  {/* {thisProduct.favorite ? (
-                    <AntDesign size={30} name="star" color="gold" />
+                  {newProduct.favorite ? (
+                    <View style={styles.star}>
+                      <AntDesign size={30} name="star" color="gold" />
+                      <Text>Retirer des favoris</Text>
+                    </View>
                   ) : (
-                    <AntDesign size={30} name="staro" color="gold" />
-                  )} */}
-                  <Text>favoris</Text>
+                    <View style={styles.star}>
+                      <AntDesign size={30} name="staro" color="gold" />
+                      <Text>Ajouter aux favoris</Text>
+                    </View>
+                  )}
                 </TouchableOpacity>
-              </View>
-              <Text>{data.product.brands}</Text>
-              <View style={styles.grade}>
-                {data.product.nutrition_grade_fr === "a" ||
-                data.product.ecoscore_grade === "a" ? (
-                  <View style={styles.grade}>
-                    <FontAwesome name="circle" size={24} color="green" />
-                    <View style={styles.note}>
-                      <Text style={styles.score}>
-                        {data.product.nutriscore_score}/100
-                        <Text>(A REVOIR)</Text>
-                      </Text>
-                      <Text>Excellent!</Text>
-                    </View>
-                  </View>
-                ) : data.product.nutrition_grade_fr === "b" ||
-                  data.product.ecoscore_grade === "b" ? (
-                  <View style={styles.grade}>
-                    <FontAwesome name="circle" size={24} color="#5DCC71" />
-                    <View style={styles.note}>
-                      <Text style={styles.score}>
-                        {data.product.nutriscore_score ||
-                          data.product.ecoscore_score}
-                        /100
-                        <Text>(A REVOIR)</Text>
-                      </Text>
-                      <Text>Trés bon</Text>
-                    </View>
-                  </View>
-                ) : data.product.nutrition_grade_fr === "c" ||
-                  data.product.ecoscore_grade === "c" ? (
-                  <View style={styles.grade}>
-                    <FontAwesome name="circle" size={24} color="yellow" />
-                    <View style={styles.note}>
-                      <Text style={styles.score}>
-                        {data.product.nutriscore_score.toFixed(2) ||
-                          data.product.ecoscore_score}
-                        /100
-                        <Text>(A REVOIR)</Text>
-                      </Text>
-                      <Text>Bon</Text>
-                    </View>
-                  </View>
-                ) : data.product.nutrition_grade_fr === "d" ||
-                  data.product.ecoscore_grade === "d" ? (
-                  <View style={styles.grade}>
-                    <FontAwesome name="circle" size={24} color="orange" />
-                    <View style={styles.note}>
-                      <Text style={styles.score}>
-                        {data.product.nutriscore_score}/100
-                        <Text>(A REVOIR)</Text>
-                      </Text>
-                      <Text>Médiocre</Text>
-                    </View>
-                  </View>
-                ) : data.product.nutrition_grade_fr === "e" ||
-                  data.product.ecoscore_grade === "e" ? (
-                  <View style={styles.grade}>
-                    <FontAwesome name="circle" size={24} color="#D50506" />
-                    <View style={styles.note}>
-                      <Text style={styles.score}>
-                        {data.product.nutriscore_score}/100
-                        <Text>(A REVOIR)</Text>
-                      </Text>
-                      <Text>Mauvais</Text>
-                    </View>
-                  </View>
-                ) : data.product.nutrition_grade_fr === "no_value" ||
-                  data.product.nutrition_grade_fr === undefined ? (
-                  <View>
-                    <FontAwesome name="circle" size={24} color="#D1D1D1" />
-                    <Text>Pas de note pour ce produit pour l'instant</Text>
-                  </View>
-                ) : null}
               </View>
             </View>
           </View>
@@ -280,7 +291,7 @@ export default function ProductScreen(props) {
                     </View>
                     <View style={styles.direction}>
                       <Text style={styles.texte}>
-                        {data.product.nutriments.proteins_100g} g
+                        {data.product.nutriments.proteins_100g.toFixed(2)} g
                       </Text>
                       <FontAwesome
                         style={styles.texte}
@@ -313,7 +324,7 @@ export default function ProductScreen(props) {
                     </View>
                     <View style={styles.direction}>
                       <Text style={styles.texte}>
-                        {data.product.nutriments.proteins_100g} g
+                        {data.product.nutriments.proteins_100g.toFixed(2)} g
                       </Text>
                       <FontAwesome
                         style={styles.texte}
@@ -351,7 +362,7 @@ export default function ProductScreen(props) {
                     </View>
                     <View style={styles.direction}>
                       <Text style={styles.texte}>
-                        {data.product.nutriments.fiber_100g} g
+                        {data.product.nutriments.fiber_100g.toFixed(2)} g
                       </Text>
                       <FontAwesome
                         style={styles.texte}
@@ -384,7 +395,7 @@ export default function ProductScreen(props) {
                     </View>
                     <View style={styles.direction}>
                       <Text style={styles.texte}>
-                        {data.product.nutriments.fiber_100g} g
+                        {data.product.nutriments.fiber_100g.toFixed(2)} g
                       </Text>
                       <FontAwesome
                         style={styles.texte}
@@ -421,7 +432,7 @@ export default function ProductScreen(props) {
                     </View>
                     <View style={styles.direction}>
                       <Text style={styles.texte}>
-                        {data.product.nutriments.energy_value} kCal
+                        {data.product.nutriments.energy_value.toFixed(2)} kCal
                       </Text>
                       <FontAwesome
                         style={styles.texte}
@@ -455,7 +466,7 @@ export default function ProductScreen(props) {
                     </View>
                     <View style={styles.direction}>
                       <Text style={styles.texte}>
-                        {data.product.nutriments.energy_value} kCal
+                        {data.product.nutriments.energy_value.toFixed(2)} kCal
                       </Text>
                       <FontAwesome
                         style={styles.texte}
@@ -492,7 +503,10 @@ export default function ProductScreen(props) {
                     </View>
                     <View style={styles.direction}>
                       <Text style={styles.texte}>
-                        {data.product.nutriments["saturated-fat_value"]} g
+                        {data.product.nutriments["saturated-fat_value"].toFixed(
+                          2
+                        )}
+                        g
                       </Text>
                       <FontAwesome
                         style={styles.texte}
@@ -525,7 +539,10 @@ export default function ProductScreen(props) {
                     </View>
                     <View style={styles.direction}>
                       <Text style={styles.texte}>
-                        {data.product.nutriments["saturated-fat_value"]} g
+                        {data.product.nutriments["saturated-fat_value"].toFixed(
+                          2
+                        )}
+                        g
                       </Text>
                       <FontAwesome
                         style={styles.texte}
@@ -559,7 +576,10 @@ export default function ProductScreen(props) {
                     </View>
                     <View style={styles.grammes}>
                       <Text style={styles.texte}>
-                        {data.product.nutriments["saturated-fat_value"]} g
+                        {data.product.nutriments["saturated-fat_value"].toFixed(
+                          2
+                        )}
+                        g
                       </Text>
                       <FontAwesome
                         style={styles.texte}
@@ -596,7 +616,7 @@ export default function ProductScreen(props) {
                     </View>
                     <View style={styles.direction}>
                       <Text style={styles.texte}>
-                        {data.product.nutriments.sugars_100g} g
+                        {data.product.nutriments.sugars_100g.toFixed(2)} g
                       </Text>
                       <FontAwesome
                         style={styles.texte}
@@ -629,7 +649,7 @@ export default function ProductScreen(props) {
                     </View>
                     <View style={styles.direction}>
                       <Text style={styles.texte}>
-                        {data.product.nutriments.sugars_100g} g
+                        {data.product.nutriments.sugars_100g.toFixed(2)} g
                       </Text>
                       <FontAwesome
                         style={styles.texte}
@@ -657,13 +677,13 @@ export default function ProductScreen(props) {
                       <Text style={styles.text}>Sucre</Text>
                     </View>
                   </View>
-                  <View style={styles.dispatch}>
-                    <View style={styles.grammes}>
+                  <View style={styles.grammes}>
+                    <View style={styles.dispatch}>
                       <Text>Faible impact</Text>
                     </View>
-                    <View style={styles.grammes}>
+                    <View style={styles.direction}>
                       <Text style={styles.texte}>
-                        {data.product.nutriments.sugars_100g} g
+                        {data.product.nutriments.sugars_100g.toFixed(2)} g
                       </Text>
                       <FontAwesome
                         style={styles.texte}
@@ -679,8 +699,8 @@ export default function ProductScreen(props) {
                         />
                       </TouchableOpacity>
                     </View>
-                    <View style={styles.sndview} />
                   </View>
+                  <View style={styles.sndview} />
                 </View>
               ) : null}
             </View>
@@ -700,7 +720,7 @@ export default function ProductScreen(props) {
                     </View>
                     <View style={styles.direction}>
                       <Text style={styles.texte}>
-                        {data.product.nutriments.salt_100g} g
+                        {data.product.nutriments.salt_100g.toFixed(2)} g
                       </Text>
                       <FontAwesome
                         style={styles.texte}
@@ -733,7 +753,7 @@ export default function ProductScreen(props) {
                     </View>
                     <View style={styles.direction}>
                       <Text style={styles.texte}>
-                        {data.product.nutriments.salt_100g} g
+                        {data.product.nutriments.salt_100g.toFixed(2)} g
                       </Text>
                       <FontAwesome
                         style={styles.texte}
@@ -767,7 +787,7 @@ export default function ProductScreen(props) {
                     </View>
                     <View style={styles.direction}>
                       <Text style={styles.texte}>
-                        {data.product.nutriments.salt_100g} g
+                        {data.product.nutriments.salt_100g.toFixed(2)} g
                       </Text>
                       <FontAwesome
                         style={styles.texte}
@@ -818,8 +838,9 @@ export default function ProductScreen(props) {
                     </View>
                     <View style={styles.direction}>
                       <Text style={styles.texte}>
-                        {data.product.nutriments["energy-kcal_100g"] ||
-                          data.product.nutriments.energy_value}
+                        {data.product.nutriments["energy-kcal_100g"].toFixed(
+                          2
+                        ) || data.product.nutriments.energy_value.toFixed(2)}
                         kCal
                       </Text>
                       <FontAwesome
@@ -853,8 +874,9 @@ export default function ProductScreen(props) {
                     </View>
                     <View style={styles.direction}>
                       <Text style={styles.texte}>
-                        {data.product.nutriments["energy-kcal_100g"] ||
-                          data.product.nutriments.energy_value}
+                        {data.product.nutriments["energy-kcal_100g"].toFixed(
+                          2
+                        ) || data.product.nutriments.energy_value.toFixed(2)}
                         kCal
                       </Text>
                       <FontAwesome
@@ -893,7 +915,10 @@ export default function ProductScreen(props) {
                     </View>
                     <View style={styles.direction}>
                       <Text style={styles.texte}>
-                        {data.product.nutriments["saturated-fat_value"]} g
+                        {data.product.nutriments["saturated-fat_value"].toFixed(
+                          2
+                        )}
+                        g
                       </Text>
                       <FontAwesome
                         style={styles.texte}
@@ -926,7 +951,10 @@ export default function ProductScreen(props) {
                     </View>
                     <View style={styles.direction}>
                       <Text style={styles.texte}>
-                        {data.product.nutriments["saturated-fat_value"]} g
+                        {data.product.nutriments["saturated-fat_value"].toFixed(
+                          2
+                        )}
+                        g
                       </Text>
                       <FontAwesome
                         style={styles.texte}
@@ -964,7 +992,7 @@ export default function ProductScreen(props) {
                     </View>
                     <View style={styles.direction}>
                       <Text style={styles.texte}>
-                        {data.product.nutriments.sugars_100g} g
+                        {data.product.nutriments.sugars_100g.toFixed(2)} g
                       </Text>
                       <FontAwesome
                         style={styles.texte}
@@ -997,7 +1025,7 @@ export default function ProductScreen(props) {
                     </View>
                     <View style={styles.direction}>
                       <Text style={styles.texte}>
-                        {data.product.nutriments.sugars_100g} g
+                        {data.product.nutriments.sugars_100g.toFixed(2)} g
                       </Text>
                       <FontAwesome
                         style={styles.texte}
@@ -1035,7 +1063,7 @@ export default function ProductScreen(props) {
                     </View>
                     <View style={styles.direction}>
                       <Text style={styles.texte}>
-                        {data.product.nutriments.salt_100g} g
+                        {data.product.nutriments.salt_100g.toFixed(2)} g
                       </Text>
                       <FontAwesome
                         style={styles.texte}
@@ -1068,7 +1096,7 @@ export default function ProductScreen(props) {
                     </View>
                     <View style={styles.direction}>
                       <Text style={styles.texte}>
-                        {data.product.nutriments.salt_100g} g
+                        {data.product.nutriments.salt_100g.toFixed(2)} g
                       </Text>
                       <FontAwesome
                         style={styles.texte}

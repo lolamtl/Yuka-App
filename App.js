@@ -59,6 +59,16 @@ export default function App() {
               >
                 {() => <HomeScreen product={product} setProduct={setProduct} />}
               </Stack.Screen>
+              <Stack.Screen
+                name="Caméra"
+                options={{
+                  // headerTitle: false,
+                  header: () => null,
+                  animationEnabled: false,
+                }}
+              >
+                {() => <CameraScreen code={code} setCode={setCode} />}
+              </Stack.Screen>
 
               <Stack.Screen
                 name="Product"
@@ -71,7 +81,7 @@ export default function App() {
               >
                 {(props) => <ProductScreen {...props} product={product} />}
               </Stack.Screen>
-              <Stack.Screen
+              {/* <Stack.Screen
                 name="Caméra"
                 options={{
                   // headerTitle: false,
@@ -80,7 +90,17 @@ export default function App() {
                 }}
               >
                 {() => <CameraScreen code={code} setCode={setCode} />}
-              </Stack.Screen>
+              </Stack.Screen> */}
+              {/* <Stack.Screen
+                name="Favorites"
+                options={{
+                  // headerTitle: false,
+                  header: () => null,
+                  animationEnabled: false,
+                }}
+              >
+                {(props) => <FavoritesScreen {...props} />}
+              </Stack.Screen> */}
             </Stack.Navigator>
           )}
         </Tab.Screen>
@@ -93,43 +113,58 @@ export default function App() {
             ),
           }}
         >
-          {(props) => <FavoritesScreen {...props} />}
-        </Tab.Screen>
-        {/* <Tab.Screen
-          name="Caméra"
-          options={{
-            tabBarIcon: ({ color }) => (
-              <MaterialCommunityIcons
-                name="barcode-scan"
-                size={24}
-                color={color}
-              />
-            ),
-          }}
-        >
+          {/* {(props) => <FavoritesScreen {...props} />} */}
           {() => (
             <Stack.Navigator>
               <Stack.Screen
-                name="Caméra"
+                name="Favorites"
                 options={{
                   // headerTitle: false,
                   header: () => null,
                   animationEnabled: false,
                 }}
               >
-                {() => <CameraScreen code={code} setCode={setCode} />}
+                {(props) => <FavoritesScreen {...props} />}
               </Stack.Screen>
             </Stack.Navigator>
           )}
-        </Tab.Screen> */}
+        </Tab.Screen>
+
+        {/* <Tab.Screen
+          name="Caméra"
+          options={{
+            tabBarIcon: ({ color }) => (
+              <MaterialCommunityIcons
+              name="barcode-scan"
+              size={24}
+              color={color}
+              />
+              ),
+            }}
+            >
+            {() => (
+              <Stack.Navigator>
+              <Stack.Screen
+              name="Caméra"
+              options={{
+                // headerTitle: false,
+                header: () => null,
+                animationEnabled: false,
+              }}
+              >
+              {() => <CameraScreen code={code} setCode={setCode} />}
+              </Stack.Screen>
+              </Stack.Navigator>
+              )}
+            </Tab.Screen> */}
         {/* <Tab.screen
           name="Search"
           options={{
             tabBarIcon: () => (
               <FontAwesome name="search" size={24} color="black" />
-            ),
-          }}
-        ></Tab.screen>   */}
+              ),
+            }}
+          ></Tab.screen>   */}
       </Tab.Navigator>
     </NavigationContainer>
   );
