@@ -1,13 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { useNavigation, useRoute } from "@react-navigation/core";
 import {
-  Button,
   Text,
   View,
   ActivityIndicator,
   StyleSheet,
   Image,
-  FlatList,
   SafeAreaView,
 } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
@@ -20,7 +18,6 @@ import { FontAwesome5 } from "@expo/vector-icons";
 import { Ionicons } from "@expo/vector-icons";
 import { Fontisto } from "@expo/vector-icons";
 import { Octicons } from "@expo/vector-icons";
-import { color, log } from "react-native-reanimated";
 
 export default function ProductScreen(props) {
   const navigation = useNavigation();
@@ -28,7 +25,6 @@ export default function ProductScreen(props) {
   const [data, setData] = useState({});
   const [newProduct, setNewProduct] = useState({});
   const { params } = useRoute();
-  // const { product, setProduct } = props;
 
   const saveTheProduct = async (newobject) => {
     const saveCode = await AsyncStorage.getItem("pdt");
@@ -79,11 +75,10 @@ export default function ProductScreen(props) {
     }
   };
 
-  // const code = props.route.params.code;
   // console.log(
   //   "LOOK HERE++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
   // );
-  // console.log(props.route.params);
+  // console.log(props.route.params.code);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -97,11 +92,10 @@ export default function ProductScreen(props) {
           setData(response.data);
           saveTheProduct(response.data);
           setIsLoading(false);
-          // await AsyncStorage.setItem("code", code);
         } else {
           alert("Ca marche pas!");
         }
-        console.log("loook HERREEEEEEEEE --------------->");
+        // console.log("loook HERREEEEEEEEE --------------->");
         // console.log(response.data);
       } catch (error) {
         console.log(error.message);
@@ -109,7 +103,6 @@ export default function ProductScreen(props) {
     };
     fetchData();
   }, []);
-  console.log("NEWPRODUCT", newProduct);
 
   return isLoading ? (
     <View>
@@ -121,1006 +114,997 @@ export default function ProductScreen(props) {
     </View>
   ) : (
     <SafeAreaView style={{ flex: 1 }}>
-      <ScrollView>
-        <View>
-          <View style={styles.view}>
-            {/* --------------------- PRODUITS INFOS ------------------> */}
-            <View>
-              <Image
-                style={{ height: 150, width: 100, borderRadius: 10 }}
-                source={{ uri: data.product.image_url }}
-              />
-            </View>
-            <View style={styles.infos}>
-              <View style={styles.favoris}>
-                <Text style={styles.text}>{data.product.product_name}</Text>
-              </View>
-              <Text>{data.product.brands}</Text>
+      {data.code === undefined ? (
+        <Text style={styles.text}>
+          Ce produit n'est pas encore dans notre base de données
+        </Text>
+      ) : (
+        <ScrollView>
+          <View>
+            <View style={styles.view}>
+              {/* --------------------- PRODUIT INFOS ------------------> */}
               <View>
-                <View style={styles.grade}>
-                  {data.product.nutrition_grade_fr === "a" ||
-                  data.product.ecoscore_grade === "a" ? (
-                    <View style={styles.grade}>
-                      <FontAwesome name="circle" size={24} color="green" />
-                      <View style={styles.note}>
-                        <Text style={styles.score}>
-                          {data.product.nutriscore_score}/100
-                          <Text>(A REVOIR)</Text>
-                        </Text>
-                        <Text>Excellent!</Text>
-                      </View>
-                    </View>
-                  ) : data.product.nutrition_grade_fr === "b" ||
-                    data.product.ecoscore_grade === "b" ? (
-                    <View style={styles.grade}>
-                      <FontAwesome name="circle" size={24} color="#5DCC71" />
-                      <View style={styles.note}>
-                        <Text style={styles.score}>
-                          {data.product.nutriscore_score ||
-                            data.product.ecoscore_score}
-                          /100
-                          <Text>(A REVOIR)</Text>
-                        </Text>
-                        <Text>Trés bon</Text>
-                      </View>
-                    </View>
-                  ) : data.product.nutrition_grade_fr === "c" ||
-                    data.product.ecoscore_grade === "c" ? (
-                    <View style={styles.grade}>
-                      <FontAwesome name="circle" size={24} color="yellow" />
-                      <View style={styles.note}>
-                        <Text style={styles.score}>
-                          {data.product.nutriscore_score.toFixed(2) ||
-                            data.product.ecoscore_score}
-                          /100
-                          <Text>(A REVOIR)</Text>
-                        </Text>
-                        <Text>Bon</Text>
-                      </View>
-                    </View>
-                  ) : data.product.nutrition_grade_fr === "d" ||
-                    data.product.ecoscore_grade === "d" ? (
-                    <View style={styles.grade}>
-                      <FontAwesome name="circle" size={24} color="orange" />
-                      <View style={styles.note}>
-                        <Text style={styles.score}>
-                          {data.product.nutriscore_score}/100
-                          <Text>(A REVOIR)</Text>
-                        </Text>
-                        <Text>Médiocre</Text>
-                      </View>
-                    </View>
-                  ) : data.product.nutrition_grade_fr === "e" ||
-                    data.product.ecoscore_grade === "e" ? (
-                    <View style={styles.grade}>
-                      <FontAwesome name="circle" size={24} color="#D50506" />
-                      <View style={styles.note}>
-                        <Text style={styles.score}>
-                          {data.product.nutriscore_score}/100
-                          <Text>(A REVOIR)</Text>
-                        </Text>
-                        <Text>Mauvais</Text>
-                      </View>
-                    </View>
-                  ) : data.product.nutrition_grade_fr === "no_value" ||
-                    data.product.nutrition_grade_fr === undefined ? (
-                    <View>
-                      <FontAwesome name="circle" size={24} color="#D1D1D1" />
-                      <Text>Pas de note pour ce produit pour l'instant</Text>
-                    </View>
-                  ) : null}
+                {data.product.image_url ? (
+                  <Image
+                    style={{ height: 150, width: 100, borderRadius: 10 }}
+                    source={{ uri: data.product.image_url }}
+                  />
+                ) : null}
+              </View>
+              <View style={styles.infos}>
+                <View style={styles.favoris}>
+                  <Text style={styles.text}>{data.product.product_name}</Text>
                 </View>
-                <TouchableOpacity
-                  onPress={async () => {
-                    const productFavo = await AsyncStorage.getItem("pdt");
-                    if (productFavo !== null) {
-                      const productArray = JSON.parse(productFavo);
+                <Text>{data.product.brands}</Text>
+                <View>
+                  <View style={styles.grade}>
+                    {data.product.nutrition_grade_fr === "a" ||
+                    data.product.ecoscore_grade === "a" ? (
+                      <View style={styles.grade}>
+                        <FontAwesome name="circle" size={24} color="green" />
+                        <View style={styles.note}>
+                          <Text>Excellent!</Text>
+                        </View>
+                      </View>
+                    ) : data.product.nutrition_grade_fr === "b" ||
+                      data.product.ecoscore_grade === "b" ? (
+                      <View style={styles.grade}>
+                        <FontAwesome name="circle" size={24} color="#5DCC71" />
+                        <View style={styles.note}>
+                          <Text>Trés bon</Text>
+                        </View>
+                      </View>
+                    ) : data.product.nutrition_grade_fr === "c" ||
+                      data.product.ecoscore_grade === "c" ? (
+                      <View style={styles.grade}>
+                        <FontAwesome name="circle" size={24} color="yellow" />
+                        <View style={styles.note}>
+                          <Text>Bon</Text>
+                        </View>
+                      </View>
+                    ) : data.product.nutrition_grade_fr === "d" ||
+                      data.product.ecoscore_grade === "d" ? (
+                      <View style={styles.grade}>
+                        <FontAwesome name="circle" size={24} color="orange" />
+                        <View style={styles.note}>
+                          <Text>Médiocre</Text>
+                        </View>
+                      </View>
+                    ) : data.product.nutrition_grade_fr === "e" ||
+                      data.product.ecoscore_grade === "e" ? (
+                      <View style={styles.grade}>
+                        <FontAwesome name="circle" size={24} color="#D50506" />
+                        <View style={styles.note}>
+                          <Text>Mauvais</Text>
+                        </View>
+                      </View>
+                    ) : data.product.nutrition_grade_fr === "no_value" ||
+                      data.product.nutrition_grade_fr === undefined ? (
+                      <View>
+                        <FontAwesome name="circle" size={24} color="#D1D1D1" />
+                        <Text>
+                          Pas de nutriscore pour ce produit pour l'instant
+                        </Text>
+                      </View>
+                    ) : null}
+                  </View>
+                  <TouchableOpacity
+                    onPress={async () => {
+                      const productFavo = await AsyncStorage.getItem("pdt");
+                      if (productFavo !== null) {
+                        const productArray = JSON.parse(productFavo);
 
-                      for (let i = 0; i < productArray.length; i++) {
-                        if (productArray[i].id === data.product.id) {
-                          productArray[i].favorite = !productArray[i].favorite;
+                        for (let i = 0; i < productArray.length; i++) {
+                          if (productArray[i].id === data.product.id) {
+                            productArray[i].favorite = !productArray[i]
+                              .favorite;
+                          }
                         }
+                        await AsyncStorage.setItem(
+                          "pdt",
+                          JSON.stringify(productArray)
+                        );
                       }
-                      await AsyncStorage.setItem(
-                        "pdt",
-                        JSON.stringify(productArray)
-                      );
-                    }
-                    setNewProduct({
-                      ...newProduct,
-                      favorite: !newProduct.favorite,
-                    });
-                  }}
-                  // style={styles.star}
-                >
-                  {newProduct.favorite ? (
-                    <View style={styles.star}>
-                      <AntDesign size={30} name="star" color="gold" />
-                      <Text>Retirer des favoris</Text>
-                    </View>
-                  ) : (
-                    <View style={styles.star}>
-                      <AntDesign size={30} name="staro" color="gold" />
-                      <Text>Ajouter aux favoris</Text>
-                    </View>
-                  )}
-                </TouchableOpacity>
+                      setNewProduct({
+                        ...newProduct,
+                        favorite: !newProduct.favorite,
+                      });
+                    }}
+                  >
+                    {newProduct.favorite ? (
+                      <View style={styles.star}>
+                        <Entypo name="heart" size={24} color="orange" />
+                        <Text>Retirer des favoris</Text>
+                      </View>
+                    ) : (
+                      <View style={styles.star}>
+                        <Entypo
+                          name="heart-outlined"
+                          size={24}
+                          color="orange"
+                        />
+                        <Text>Ajouter aux favoris</Text>
+                      </View>
+                    )}
+                  </TouchableOpacity>
+                </View>
               </View>
             </View>
-          </View>
 
-          {/* ----------------------------- QUALITES PDT -----------------------> */}
-          <View style={styles.description}>
-            <View style={styles.quality}>
-              <View>
-                <Text style={styles.qualité}>Qualités</Text>
-              </View>
-              <View>
-                <Text>pour 100g</Text>
-              </View>
-            </View>
-            {/* ================== BIO ? -------------------> */}
-            {data.product.labels_tags[0] === "en:organic" ? (
-              <View style={styles.quality} alignItems="center">
-                <View style={styles.leaf}>
-                  <Entypo name="leaf" size={24} color="black" />
-                  <View style={styles.textplus}>
-                    <Text style={styles.text}>Bio</Text>
-                    <Text>Produit naturel</Text>
-                  </View>
+            {/* ----------------------------- QUALITES PDT -----------------------> */}
+            <View style={styles.description}>
+              <View style={styles.quality}>
+                <View>
+                  <Text style={styles.qualité}>Qualités</Text>
                 </View>
-                <AntDesign name="check" size={24} color="#5DCC71" />
+                <View>
+                  <Text>pour 100g</Text>
+                </View>
               </View>
-            ) : null}
-            <View style={styles.sndview} />
+              {/* ================== BIO ? -------------------> */}
+              {data.product.labels_tags &&
+              data.product.labels_tags[0] === "en:organic" ? (
+                <View style={styles.quality} alignItems="center">
+                  <View style={styles.leaf}>
+                    <Entypo name="leaf" size={24} color="black" />
+                    <View style={styles.textplus}>
+                      <Text style={styles.text}>Bio</Text>
+                      <Text>Produit naturel</Text>
+                    </View>
+                  </View>
+                  <AntDesign name="check" size={24} color="#5DCC71" />
+                </View>
+              ) : null}
+              <View style={styles.sndview} />
 
-            {/* ========================= PROTEINES ====================== */}
-            <View style={styles.flex}>
-              {data.product.nutriments.proteins_100g === 0 ? null : data.product
-                  .nutriments.proteins_100g < 8 ? (
-                <View>
-                  <View style={styles.leaf}>
-                    <FontAwesome5 name="fish" size={24} color="black" />
-                    <View style={styles.textplus}>
-                      <Text style={styles.text}>Protéines</Text>
-                    </View>
-                  </View>
-                  <View style={styles.grammes}>
-                    <View style={styles.dispatch}>
-                      <Text>Quelques Protéines</Text>
-                    </View>
-                    <View style={styles.direction}>
-                      <Text style={styles.texte}>
-                        {data.product.nutriments.proteins_100g.toFixed(2)} g
-                      </Text>
-                      <FontAwesome
-                        style={styles.texte}
-                        name="circle"
-                        size={24}
-                        color="#5DCC71"
-                      />
-                      <TouchableOpacity onChange={"hellooooo"}>
-                        <Ionicons
-                          name="ios-arrow-forward"
-                          size={24}
-                          color="black"
-                        />
-                      </TouchableOpacity>
-                    </View>
-                  </View>
-                  <View style={styles.sndview} />
-                </View>
-              ) : data.product.nutriments.proteins_100g >= 8 ? (
-                <View>
-                  <View style={styles.leaf}>
-                    <FontAwesome5 name="fish" size={24} color="black" />
-                    <View style={styles.textplus}>
-                      <Text style={styles.text}>Protéines</Text>
-                    </View>
-                  </View>
-                  <View style={styles.grammes}>
-                    <View style={styles.dispatch}>
-                      <Text>Excellente quantité de protéines</Text>
-                    </View>
-                    <View style={styles.direction}>
-                      <Text style={styles.texte}>
-                        {data.product.nutriments.proteins_100g.toFixed(2)} g
-                      </Text>
-                      <FontAwesome
-                        style={styles.texte}
-                        name="circle"
-                        size={24}
-                        color="green"
-                      />
-                      <TouchableOpacity onPress={() => {}}>
-                        <Ionicons
-                          name="ios-arrow-forward"
-                          size={24}
-                          color="black"
-                        />
-                      </TouchableOpacity>
-                    </View>
-                  </View>
-                  <View style={styles.sndview} />
-                </View>
-              ) : null}
-            </View>
-            {/* ========================= FIBRES ===================== */}
-            <View style={styles.flex}>
-              {data.product.nutriments.fiber_100g === 0 ? null : data.product
-                  .nutriments.fiber_100g < 3.5 ? (
-                <View>
-                  <View style={styles.leaf}>
-                    <Fontisto name="sourcetree" size={24} color="black" />
-                    <View style={styles.textplus}>
-                      <Text style={styles.text}>Fibres</Text>
-                    </View>
-                  </View>
-                  <View style={styles.grammes}>
-                    <View style={styles.dispatch}>
-                      <Text>Quelques fibres</Text>
-                    </View>
-                    <View style={styles.direction}>
-                      <Text style={styles.texte}>
-                        {data.product.nutriments.fiber_100g.toFixed(2)} g
-                      </Text>
-                      <FontAwesome
-                        style={styles.texte}
-                        name="circle"
-                        size={24}
-                        color="#5DCC71"
-                      />
-                      <TouchableOpacity onPress={() => {}}>
-                        <Ionicons
-                          name="ios-arrow-forward"
-                          size={24}
-                          color="black"
-                        />
-                      </TouchableOpacity>
-                    </View>
-                  </View>
-                  <View style={styles.sndview} />
-                </View>
-              ) : data.product.nutriments.fiber_100g >= 3.5 ? (
-                <View>
-                  <View style={styles.leaf}>
-                    <Fontisto name="sourcetree" size={24} color="black" />
-                    <View style={styles.textplus}>
-                      <Text style={styles.text}>Fibres</Text>
-                    </View>
-                  </View>
-                  <View style={styles.grammes}>
-                    <View style={styles.dispatch}>
-                      <Text>Excellente quantité de fibres</Text>
-                    </View>
-                    <View style={styles.direction}>
-                      <Text style={styles.texte}>
-                        {data.product.nutriments.fiber_100g.toFixed(2)} g
-                      </Text>
-                      <FontAwesome
-                        style={styles.texte}
-                        name="circle"
-                        size={24}
-                        color="green"
-                      />
-                      <TouchableOpacity onPress={() => {}}>
-                        <Ionicons
-                          name="ios-arrow-forward"
-                          size={24}
-                          color="black"
-                        />
-                      </TouchableOpacity>
-                    </View>
-                  </View>
-                  <View style={styles.sndview} />
-                </View>
-              ) : null}
-            </View>
-            {/* =============================== CALORIES ========================= */}
-            <View style={styles.flex}>
-              {data.product.nutriments.energy_value < 160 ? (
-                <View>
-                  <View style={styles.leaf}>
-                    <Octicons name="flame" size={24} color="black" />
-                    <View style={styles.textplus}>
-                      <Text style={styles.text}>Calories</Text>
-                    </View>
-                  </View>
-                  <View style={styles.grammes}>
-                    <View style={styles.dispatch}>
-                      <Text>Peu calorique</Text>
-                    </View>
-                    <View style={styles.direction}>
-                      <Text style={styles.texte}>
-                        {data.product.nutriments.energy_value.toFixed(2)} kCal
-                      </Text>
-                      <FontAwesome
-                        style={styles.texte}
-                        name="circle"
-                        size={24}
-                        color="green"
-                      />
-                      <TouchableOpacity onPress={() => {}}>
-                        <Ionicons
-                          name="ios-arrow-forward"
-                          size={24}
-                          color="black"
-                        />
-                      </TouchableOpacity>
-                    </View>
-                  </View>
-                  <View style={styles.sndview} />
-                </View>
-              ) : data.product.nutriments.energy_value >= 160 &&
-                data.product.nutriments.energy_value <= 360 ? (
-                <View>
-                  <View style={styles.leaf}>
-                    <Octicons name="flame" size={24} color="black" />
-                    <View style={styles.textplus}>
-                      <Text style={styles.text}>Calories</Text>
-                    </View>
-                  </View>
-                  <View style={styles.grammes}>
-                    <View style={styles.dispatch}>
-                      <Text>Faible impact</Text>
-                    </View>
-                    <View style={styles.direction}>
-                      <Text style={styles.texte}>
-                        {data.product.nutriments.energy_value.toFixed(2)} kCal
-                      </Text>
-                      <FontAwesome
-                        style={styles.texte}
-                        name="circle"
-                        size={24}
-                        color="#5DCC71"
-                      />
-                      <TouchableOpacity onPress={() => {}}>
-                        <Ionicons
-                          name="ios-arrow-forward"
-                          size={24}
-                          color="black"
-                        />
-                      </TouchableOpacity>
-                    </View>
-                  </View>
-                  <View style={styles.sndview} />
-                </View>
-              ) : null}
-            </View>
-            {/* ========================== GRAISSES SATUREES ====================== */}
-            <View style={styles.flex}>
-              {data.product.nutriments["saturated-fat_value"] === 0 ? (
-                <View>
-                  <View style={styles.leaf}>
-                    <Ionicons name="ios-water" size={24} color="black" />
-                    <View style={styles.textplus}>
-                      <Text style={styles.text}>Graisses saturées</Text>
-                    </View>
-                  </View>
-                  <View style={styles.grammes}>
-                    <View style={styles.dispatch}>
-                      <Text>Pas de graisses sat.</Text>
-                    </View>
-                    <View style={styles.direction}>
-                      <Text style={styles.texte}>
-                        {data.product.nutriments["saturated-fat_value"].toFixed(
-                          2
-                        )}
-                        g
-                      </Text>
-                      <FontAwesome
-                        style={styles.texte}
-                        name="circle"
-                        size={24}
-                        color="green"
-                      />
-                      <TouchableOpacity onPress={() => {}}>
-                        <Ionicons
-                          name="ios-arrow-forward"
-                          size={24}
-                          color="black"
-                        />
-                      </TouchableOpacity>
-                    </View>
-                  </View>
-                  <View style={styles.sndview} />
-                </View>
-              ) : data.product.nutriments["saturated-fat_value"] < 2 ? (
-                <View>
-                  <View style={styles.leaf}>
-                    <Ionicons name="ios-water" size={24} color="black" />
-                    <View style={styles.textplus}>
-                      <Text style={styles.text}>Graisses saturées</Text>
-                    </View>
-                  </View>
-                  <View style={styles.grammes}>
-                    <View style={styles.dispatch}>
-                      <Text>Peu de graisses sat.</Text>
-                    </View>
-                    <View style={styles.direction}>
-                      <Text style={styles.texte}>
-                        {data.product.nutriments["saturated-fat_value"].toFixed(
-                          2
-                        )}
-                        g
-                      </Text>
-                      <FontAwesome
-                        style={styles.texte}
-                        name="circle"
-                        size={24}
-                        color="green"
-                      />
-                      <TouchableOpacity onPress={() => {}}>
-                        <Ionicons
-                          name="ios-arrow-forward"
-                          size={24}
-                          color="black"
-                        />
-                      </TouchableOpacity>
-                    </View>
-                  </View>
-                  <View style={styles.sndview} />
-                </View>
-              ) : data.product.nutriments["saturated-fat_value"] >= 2 &&
-                data.product.nutriments["saturated-fat_value"] < 4 ? (
-                <View>
-                  <View style={styles.leaf}>
-                    <Ionicons name="ios-water" size={24} color="black" />
-                    <View style={styles.textplus}>
-                      <Text style={styles.text}>Graisses saturées</Text>
-                    </View>
-                  </View>
-                  <View style={styles.dispatch}>
-                    <View style={styles.grammes}>
-                      <Text>Faible impact</Text>
+              {/* ========================= PROTEINES ====================== */}
+              <View style={styles.flex}>
+                {data.product.nutriments.proteins_100g === 0 ? null : data
+                    .product.nutriments.proteins_100g < 8 ? (
+                  <View>
+                    <View style={styles.leaf}>
+                      <FontAwesome5 name="fish" size={24} color="black" />
+                      <View style={styles.textplus}>
+                        <Text style={styles.text}>Protéines</Text>
+                      </View>
                     </View>
                     <View style={styles.grammes}>
-                      <Text style={styles.texte}>
-                        {data.product.nutriments["saturated-fat_value"].toFixed(
-                          2
-                        )}
-                        g
-                      </Text>
-                      <FontAwesome
-                        style={styles.texte}
-                        name="circle"
-                        size={24}
-                        color="#5DCC71"
-                      />
-                      <TouchableOpacity onPress={() => {}}>
-                        <Ionicons
-                          name="ios-arrow-forward"
+                      <View style={styles.dispatch}>
+                        <Text>Quelques Protéines</Text>
+                      </View>
+                      <View style={styles.direction}>
+                        <Text style={styles.texte}>
+                          {data.product.nutriments.proteins_100g.toFixed(2)} g
+                        </Text>
+                        <FontAwesome
+                          style={styles.texte}
+                          name="circle"
                           size={24}
-                          color="black"
+                          color="#5DCC71"
                         />
-                      </TouchableOpacity>
+                        <TouchableOpacity onChange={"hellooooo"}>
+                          <Ionicons
+                            name="ios-arrow-forward"
+                            size={24}
+                            color="black"
+                          />
+                        </TouchableOpacity>
+                      </View>
                     </View>
                     <View style={styles.sndview} />
                   </View>
-                </View>
-              ) : null}
+                ) : data.product.nutriments.proteins_100g >= 8 ? (
+                  <View>
+                    <View style={styles.leaf}>
+                      <FontAwesome5 name="fish" size={24} color="black" />
+                      <View style={styles.textplus}>
+                        <Text style={styles.text}>Protéines</Text>
+                      </View>
+                    </View>
+                    <View style={styles.grammes}>
+                      <View style={styles.dispatch}>
+                        <Text>Excellente quantité de protéines</Text>
+                      </View>
+                      <View style={styles.direction}>
+                        <Text style={styles.texte}>
+                          {data.product.nutriments.proteins_100g.toFixed(2)} g
+                        </Text>
+                        <FontAwesome
+                          style={styles.texte}
+                          name="circle"
+                          size={24}
+                          color="green"
+                        />
+                        <TouchableOpacity onPress={() => {}}>
+                          <Ionicons
+                            name="ios-arrow-forward"
+                            size={24}
+                            color="black"
+                          />
+                        </TouchableOpacity>
+                      </View>
+                    </View>
+                    <View style={styles.sndview} />
+                  </View>
+                ) : null}
+              </View>
+              {/* ========================= FIBRES ===================== */}
+              <View style={styles.flex}>
+                {data.product.nutriments.fiber_100g === 0 ? null : data.product
+                    .nutriments.fiber_100g < 3.5 ? (
+                  <View>
+                    <View style={styles.leaf}>
+                      <Fontisto name="sourcetree" size={24} color="black" />
+                      <View style={styles.textplus}>
+                        <Text style={styles.text}>Fibres</Text>
+                      </View>
+                    </View>
+                    <View style={styles.grammes}>
+                      <View style={styles.dispatch}>
+                        <Text>Quelques fibres</Text>
+                      </View>
+                      <View style={styles.direction}>
+                        <Text style={styles.texte}>
+                          {data.product.nutriments.fiber_100g.toFixed(2)} g
+                        </Text>
+                        <FontAwesome
+                          style={styles.texte}
+                          name="circle"
+                          size={24}
+                          color="#5DCC71"
+                        />
+                        <TouchableOpacity onPress={() => {}}>
+                          <Ionicons
+                            name="ios-arrow-forward"
+                            size={24}
+                            color="black"
+                          />
+                        </TouchableOpacity>
+                      </View>
+                    </View>
+                    <View style={styles.sndview} />
+                  </View>
+                ) : data.product.nutriments.fiber_100g >= 3.5 ? (
+                  <View>
+                    <View style={styles.leaf}>
+                      <Fontisto name="sourcetree" size={24} color="black" />
+                      <View style={styles.textplus}>
+                        <Text style={styles.text}>Fibres</Text>
+                      </View>
+                    </View>
+                    <View style={styles.grammes}>
+                      <View style={styles.dispatch}>
+                        <Text>Excellente quantité de fibres</Text>
+                      </View>
+                      <View style={styles.direction}>
+                        <Text style={styles.texte}>
+                          {data.product.nutriments.fiber_100g.toFixed(2)} g
+                        </Text>
+                        <FontAwesome
+                          style={styles.texte}
+                          name="circle"
+                          size={24}
+                          color="green"
+                        />
+                        <TouchableOpacity onPress={() => {}}>
+                          <Ionicons
+                            name="ios-arrow-forward"
+                            size={24}
+                            color="black"
+                          />
+                        </TouchableOpacity>
+                      </View>
+                    </View>
+                    <View style={styles.sndview} />
+                  </View>
+                ) : null}
+              </View>
+              {/* =============================== CALORIES ========================= */}
+              <View style={styles.flex}>
+                {data.product.nutriments.energy_value < 160 ? (
+                  <View>
+                    <View style={styles.leaf}>
+                      <Octicons name="flame" size={24} color="black" />
+                      <View style={styles.textplus}>
+                        <Text style={styles.text}>Calories</Text>
+                      </View>
+                    </View>
+                    <View style={styles.grammes}>
+                      <View style={styles.dispatch}>
+                        <Text>Peu calorique</Text>
+                      </View>
+                      <View style={styles.direction}>
+                        <Text style={styles.texte}>
+                          {data.product.nutriments.energy_value.toFixed(2)} kCal
+                        </Text>
+                        <FontAwesome
+                          style={styles.texte}
+                          name="circle"
+                          size={24}
+                          color="green"
+                        />
+                        <TouchableOpacity onPress={() => {}}>
+                          <Ionicons
+                            name="ios-arrow-forward"
+                            size={24}
+                            color="black"
+                          />
+                        </TouchableOpacity>
+                      </View>
+                    </View>
+                    <View style={styles.sndview} />
+                  </View>
+                ) : data.product.nutriments.energy_value >= 160 &&
+                  data.product.nutriments.energy_value <= 360 ? (
+                  <View>
+                    <View style={styles.leaf}>
+                      <Octicons name="flame" size={24} color="black" />
+                      <View style={styles.textplus}>
+                        <Text style={styles.text}>Calories</Text>
+                      </View>
+                    </View>
+                    <View style={styles.grammes}>
+                      <View style={styles.dispatch}>
+                        <Text>Faible impact</Text>
+                      </View>
+                      <View style={styles.direction}>
+                        <Text style={styles.texte}>
+                          {data.product.nutriments.energy_value.toFixed(2)} kCal
+                        </Text>
+                        <FontAwesome
+                          style={styles.texte}
+                          name="circle"
+                          size={24}
+                          color="#5DCC71"
+                        />
+                        <TouchableOpacity onPress={() => {}}>
+                          <Ionicons
+                            name="ios-arrow-forward"
+                            size={24}
+                            color="black"
+                          />
+                        </TouchableOpacity>
+                      </View>
+                    </View>
+                    <View style={styles.sndview} />
+                  </View>
+                ) : null}
+              </View>
+              {/* ========================== GRAISSES SATUREES ====================== */}
+              <View style={styles.flex}>
+                {data.product.nutriments["saturated-fat_value"] === 0 ? (
+                  <View>
+                    <View style={styles.leaf}>
+                      <Ionicons name="ios-water" size={24} color="black" />
+                      <View style={styles.textplus}>
+                        <Text style={styles.text}>Graisses saturées</Text>
+                      </View>
+                    </View>
+                    <View style={styles.grammes}>
+                      <View style={styles.dispatch}>
+                        <Text>Pas de graisses sat.</Text>
+                      </View>
+                      <View style={styles.direction}>
+                        <Text style={styles.texte}>
+                          {data.product.nutriments[
+                            "saturated-fat_value"
+                          ].toFixed(2)}
+                          g
+                        </Text>
+                        <FontAwesome
+                          style={styles.texte}
+                          name="circle"
+                          size={24}
+                          color="green"
+                        />
+                        <TouchableOpacity onPress={() => {}}>
+                          <Ionicons
+                            name="ios-arrow-forward"
+                            size={24}
+                            color="black"
+                          />
+                        </TouchableOpacity>
+                      </View>
+                    </View>
+                    <View style={styles.sndview} />
+                  </View>
+                ) : data.product.nutriments["saturated-fat_value"] < 2 ? (
+                  <View>
+                    <View style={styles.leaf}>
+                      <Ionicons name="ios-water" size={24} color="black" />
+                      <View style={styles.textplus}>
+                        <Text style={styles.text}>Graisses saturées</Text>
+                      </View>
+                    </View>
+                    <View style={styles.grammes}>
+                      <View style={styles.dispatch}>
+                        <Text>Peu de graisses sat.</Text>
+                      </View>
+                      <View style={styles.direction}>
+                        <Text style={styles.texte}>
+                          {data.product.nutriments[
+                            "saturated-fat_value"
+                          ].toFixed(2)}
+                          g
+                        </Text>
+                        <FontAwesome
+                          style={styles.texte}
+                          name="circle"
+                          size={24}
+                          color="green"
+                        />
+                        <TouchableOpacity onPress={() => {}}>
+                          <Ionicons
+                            name="ios-arrow-forward"
+                            size={24}
+                            color="black"
+                          />
+                        </TouchableOpacity>
+                      </View>
+                    </View>
+                    <View style={styles.sndview} />
+                  </View>
+                ) : data.product.nutriments["saturated-fat_value"] >= 2 &&
+                  data.product.nutriments["saturated-fat_value"] < 4 ? (
+                  <View>
+                    <View style={styles.leaf}>
+                      <Ionicons name="ios-water" size={24} color="black" />
+                      <View style={styles.textplus}>
+                        <Text style={styles.text}>Graisses saturées</Text>
+                      </View>
+                    </View>
+                    <View style={styles.grammes}>
+                      <View style={styles.dispatch}>
+                        <Text>Faible impact</Text>
+                      </View>
+                      <View style={styles.direction}>
+                        <Text style={styles.texte}>
+                          {data.product.nutriments[
+                            "saturated-fat_value"
+                          ].toFixed(2)}
+                          g
+                        </Text>
+                        <FontAwesome
+                          style={styles.texte}
+                          name="circle"
+                          size={24}
+                          color="#5DCC71"
+                        />
+                        <TouchableOpacity onPress={() => {}}>
+                          <Ionicons
+                            name="ios-arrow-forward"
+                            size={24}
+                            color="black"
+                          />
+                        </TouchableOpacity>
+                      </View>
+                    </View>
+                    <View style={styles.sndview} />
+                  </View>
+                ) : null}
+              </View>
+              {/* ==================================== SUCRE ================================= */}
+              <View style={styles.flex}>
+                {data.product.nutriments.sugars_100g === 0 ? (
+                  <View>
+                    <View style={styles.leaf}>
+                      <FontAwesome name="cubes" size={24} color="black" />
+                      <View style={styles.textplus}>
+                        <Text style={styles.text}>Sucre</Text>
+                      </View>
+                    </View>
+                    <View style={styles.grammes}>
+                      <View style={styles.dispatch}>
+                        <Text>Pas de sucre</Text>
+                      </View>
+                      <View style={styles.direction}>
+                        <Text style={styles.texte}>
+                          {data.product.nutriments.sugars_100g.toFixed(2)} g
+                        </Text>
+                        <FontAwesome
+                          style={styles.texte}
+                          name="circle"
+                          size={24}
+                          color="green"
+                        />
+                        <TouchableOpacity onPress={() => {}}>
+                          <Ionicons
+                            name="ios-arrow-forward"
+                            size={24}
+                            color="black"
+                          />
+                        </TouchableOpacity>
+                      </View>
+                    </View>
+                    <View style={styles.sndview} />
+                  </View>
+                ) : data.product.nutriments.sugars_100g < 9 ? (
+                  <View>
+                    <View style={styles.leaf}>
+                      <FontAwesome name="cubes" size={24} color="black" />
+                      <View style={styles.textplus}>
+                        <Text style={styles.text}>Sucre</Text>
+                      </View>
+                    </View>
+                    <View style={styles.grammes}>
+                      <View style={styles.dispatch}>
+                        <Text>Peu de sucre</Text>
+                      </View>
+                      <View style={styles.direction}>
+                        <Text style={styles.texte}>
+                          {data.product.nutriments.sugars_100g.toFixed(2)} g
+                        </Text>
+                        <FontAwesome
+                          style={styles.texte}
+                          name="circle"
+                          size={24}
+                          color="green"
+                        />
+                        <TouchableOpacity onPress={() => {}}>
+                          <Ionicons
+                            name="ios-arrow-forward"
+                            size={24}
+                            color="black"
+                          />
+                        </TouchableOpacity>
+                      </View>
+                    </View>
+                    <View style={styles.sndview} />
+                  </View>
+                ) : data.product.nutriments.sugars_100g >= 9 &&
+                  data.product.nutriments.sugars_100g < 18 ? (
+                  <View>
+                    <View style={styles.leaf}>
+                      <FontAwesome name="cubes" size={24} color="black" />
+                      <View style={styles.textplus}>
+                        <Text style={styles.text}>Sucre</Text>
+                      </View>
+                    </View>
+                    <View style={styles.grammes}>
+                      <View style={styles.dispatch}>
+                        <Text>Faible impact</Text>
+                      </View>
+                      <View style={styles.direction}>
+                        <Text style={styles.texte}>
+                          {data.product.nutriments.sugars_100g.toFixed(2)} g
+                        </Text>
+                        <FontAwesome
+                          style={styles.texte}
+                          name="circle"
+                          size={24}
+                          color="#5DCC71"
+                        />
+                        <TouchableOpacity onPress={() => {}}>
+                          <Ionicons
+                            name="ios-arrow-forward"
+                            size={24}
+                            color="black"
+                          />
+                        </TouchableOpacity>
+                      </View>
+                    </View>
+                    <View style={styles.sndview} />
+                  </View>
+                ) : null}
+              </View>
+              {/* ========================================== SEL =================================== */}
+              <View style={styles.flex}>
+                {data.product.nutriments.salt_100g === 0 ? (
+                  <View>
+                    <View style={styles.leaf}>
+                      <AntDesign name="dotchart" size={24} color="black" />
+                      <View style={styles.textplus}>
+                        <Text style={styles.text}>Sel</Text>
+                      </View>
+                    </View>
+                    <View style={styles.grammes}>
+                      <View style={styles.dispatch}>
+                        <Text>Pas de sel</Text>
+                      </View>
+                      <View style={styles.direction}>
+                        <Text style={styles.texte}>
+                          {data.product.nutriments.salt_100g.toFixed(2)} g
+                        </Text>
+                        <FontAwesome
+                          style={styles.texte}
+                          name="circle"
+                          size={24}
+                          color="green"
+                        />
+                        <TouchableOpacity onPress={() => {}}>
+                          <Ionicons
+                            name="ios-arrow-forward"
+                            size={24}
+                            color="black"
+                          />
+                        </TouchableOpacity>
+                      </View>
+                    </View>
+                    <View style={styles.sndview} />
+                  </View>
+                ) : data.product.nutriments.salt_100g < 0.46 ? (
+                  <View>
+                    <View style={styles.leaf}>
+                      <AntDesign name="dotchart" size={24} color="black" />
+                      <View style={styles.textplus}>
+                        <Text style={styles.text}>Sel</Text>
+                      </View>
+                    </View>
+                    <View style={styles.grammes}>
+                      <View style={styles.dispatch}>
+                        <Text>Peu de sel</Text>
+                      </View>
+                      <View style={styles.direction}>
+                        <Text style={styles.texte}>
+                          {data.product.nutriments.salt_100g.toFixed(2)} g
+                        </Text>
+                        <FontAwesome
+                          style={styles.texte}
+                          name="circle"
+                          size={24}
+                          color="green"
+                        />
+                        <TouchableOpacity onPress={() => {}}>
+                          <Ionicons
+                            name="ios-arrow-forward"
+                            size={24}
+                            color="black"
+                          />
+                        </TouchableOpacity>
+                      </View>
+                    </View>
+                    <View style={styles.sndview} />
+                  </View>
+                ) : data.product.nutriments.salt_100g >= 0.46 &&
+                  data.product.nutriments.salt_100g < 0.92 ? (
+                  <View>
+                    <View style={styles.leaf}>
+                      <AntDesign name="dotchart" size={24} color="black" />
+                      <View style={styles.textplus}>
+                        <Text style={styles.text}>Sel</Text>
+                      </View>
+                    </View>
+                    <View style={styles.grammes}>
+                      <View style={styles.dispatch}>
+                        <Text>Faible impact</Text>
+                      </View>
+                      <View style={styles.direction}>
+                        <Text style={styles.texte}>
+                          {data.product.nutriments.salt_100g.toFixed(2)} g
+                        </Text>
+                        <FontAwesome
+                          style={styles.texte}
+                          name="circle"
+                          size={24}
+                          color="#5DCC71"
+                        />
+                        <TouchableOpacity onPress={() => {}}>
+                          <Ionicons
+                            name="ios-arrow-forward"
+                            size={24}
+                            color="black"
+                          />
+                        </TouchableOpacity>
+                      </View>
+                    </View>
+                    <View style={styles.sndview} />
+                  </View>
+                ) : null}
+              </View>
             </View>
-            {/* ==================================== SUCRE ================================= */}
-            <View style={styles.flex}>
-              {data.product.nutriments.sugars_100g === 0 ? (
+            {/* ++++++++++++++++++++++++++++++++++++++++++++++++DEFAUTS++++++++++++++++++++++++++++++++++++++++++++++++ */}
+
+            <View style={styles.description}>
+              <View style={styles.quality}>
                 <View>
-                  <View style={styles.leaf}>
-                    <FontAwesome name="cubes" size={24} color="black" />
-                    <View style={styles.textplus}>
-                      <Text style={styles.text}>Sucre</Text>
-                    </View>
-                  </View>
-                  <View style={styles.grammes}>
-                    <View style={styles.dispatch}>
-                      <Text>Pas de sucre</Text>
-                    </View>
-                    <View style={styles.direction}>
-                      <Text style={styles.texte}>
-                        {data.product.nutriments.sugars_100g.toFixed(2)} g
-                      </Text>
-                      <FontAwesome
-                        style={styles.texte}
-                        name="circle"
-                        size={24}
-                        color="green"
-                      />
-                      <TouchableOpacity onPress={() => {}}>
-                        <Ionicons
-                          name="ios-arrow-forward"
-                          size={24}
-                          color="black"
-                        />
-                      </TouchableOpacity>
-                    </View>
-                  </View>
-                  <View style={styles.sndview} />
+                  <Text style={styles.qualité}>Défauts</Text>
                 </View>
-              ) : data.product.nutriments.sugars_100g < 9 ? (
                 <View>
-                  <View style={styles.leaf}>
-                    <FontAwesome name="cubes" size={24} color="black" />
-                    <View style={styles.textplus}>
-                      <Text style={styles.text}>Sucre</Text>
-                    </View>
-                  </View>
-                  <View style={styles.grammes}>
-                    <View style={styles.dispatch}>
-                      <Text>Peu de sucre</Text>
-                    </View>
-                    <View style={styles.direction}>
-                      <Text style={styles.texte}>
-                        {data.product.nutriments.sugars_100g.toFixed(2)} g
-                      </Text>
-                      <FontAwesome
-                        style={styles.texte}
-                        name="circle"
-                        size={24}
-                        color="green"
-                      />
-                      <TouchableOpacity onPress={() => {}}>
-                        <Ionicons
-                          name="ios-arrow-forward"
-                          size={24}
-                          color="black"
-                        />
-                      </TouchableOpacity>
-                    </View>
-                  </View>
-                  <View style={styles.sndview} />
+                  <Text>pour 100g</Text>
                 </View>
-              ) : data.product.nutriments.sugars_100g >= 9 &&
-                data.product.nutriments.sugars_100g < 18 ? (
-                <View>
-                  <View style={styles.leaf}>
-                    <FontAwesome name="cubes" size={24} color="black" />
-                    <View style={styles.textplus}>
-                      <Text style={styles.text}>Sucre</Text>
+              </View>
+              <View style={styles.sndview} />
+
+              {/* =============================== CALORIES ========================= */}
+              <View style={styles.flex}>
+                {data.product.nutriments["energy-kcal_100g"] > 360 &&
+                data.product.nutriments["energy-kcal_100g"] < 560 ? (
+                  <View>
+                    <View style={styles.leaf}>
+                      <Octicons name="flame" size={24} color="black" />
+                      <View style={styles.textplus}>
+                        <Text style={styles.text}>Calories</Text>
+                      </View>
                     </View>
-                  </View>
-                  <View style={styles.grammes}>
-                    <View style={styles.dispatch}>
-                      <Text>Faible impact</Text>
-                    </View>
-                    <View style={styles.direction}>
-                      <Text style={styles.texte}>
-                        {data.product.nutriments.sugars_100g.toFixed(2)} g
-                      </Text>
-                      <FontAwesome
-                        style={styles.texte}
-                        name="circle"
-                        size={24}
-                        color="#5DCC71"
-                      />
-                      <TouchableOpacity onPress={() => {}}>
-                        <Ionicons
-                          name="ios-arrow-forward"
+                    <View style={styles.grammes}>
+                      <View style={styles.dispatch}>
+                        <Text>Un peu trop calorique</Text>
+                      </View>
+                      <View style={styles.direction}>
+                        <Text style={styles.texte}>
+                          {data.product.nutriments["energy-kcal_100g"].toFixed(
+                            2
+                          ) || data.product.nutriments.energy_value.toFixed(2)}
+                          kCal
+                        </Text>
+                        <FontAwesome
+                          style={styles.texte}
+                          name="circle"
                           size={24}
-                          color="black"
+                          color="orange"
                         />
-                      </TouchableOpacity>
+                        <TouchableOpacity onPress={() => {}}>
+                          <Ionicons
+                            name="ios-arrow-forward"
+                            size={24}
+                            color="black"
+                          />
+                        </TouchableOpacity>
+                      </View>
                     </View>
+                    <View style={styles.sndview} />
                   </View>
-                  <View style={styles.sndview} />
-                </View>
-              ) : null}
-            </View>
-            {/* ========================================== SEL =================================== */}
-            <View style={styles.flex}>
-              {data.product.nutriments.salt_100g === 0 ? (
-                <View>
-                  <View style={styles.leaf}>
-                    <AntDesign name="dotchart" size={24} color="black" />
-                    <View style={styles.textplus}>
-                      <Text style={styles.text}>Sel</Text>
+                ) : data.product.nutriments["energy-kcal_100g"] >= 560 ? (
+                  <View>
+                    <View style={styles.leaf}>
+                      <Octicons name="flame" size={24} color="black" />
+                      <View style={styles.textplus}>
+                        <Text style={styles.text}>Calories</Text>
+                      </View>
                     </View>
-                  </View>
-                  <View style={styles.grammes}>
-                    <View style={styles.dispatch}>
-                      <Text>Pas de sel</Text>
-                    </View>
-                    <View style={styles.direction}>
-                      <Text style={styles.texte}>
-                        {data.product.nutriments.salt_100g.toFixed(2)} g
-                      </Text>
-                      <FontAwesome
-                        style={styles.texte}
-                        name="circle"
-                        size={24}
-                        color="green"
-                      />
-                      <TouchableOpacity onPress={() => {}}>
-                        <Ionicons
-                          name="ios-arrow-forward"
+                    <View style={styles.grammes}>
+                      <View style={styles.dispatch}>
+                        <Text>Trop calorique</Text>
+                      </View>
+                      <View style={styles.direction}>
+                        <Text style={styles.texte}>
+                          {data.product.nutriments["energy-kcal_100g"].toFixed(
+                            2
+                          ) || data.product.nutriments.energy_value.toFixed(2)}
+                          kCal
+                        </Text>
+                        <FontAwesome
+                          style={styles.texte}
+                          name="circle"
                           size={24}
-                          color="black"
+                          color="red"
                         />
-                      </TouchableOpacity>
+                        <TouchableOpacity onPress={() => {}}>
+                          <Ionicons
+                            name="ios-arrow-forward"
+                            size={24}
+                            color="black"
+                          />
+                        </TouchableOpacity>
+                      </View>
                     </View>
+                    <View style={styles.sndview} />
                   </View>
-                  <View style={styles.sndview} />
-                </View>
-              ) : data.product.nutriments.salt_100g < 0.46 ? (
-                <View>
-                  <View style={styles.leaf}>
-                    <AntDesign name="dotchart" size={24} color="black" />
-                    <View style={styles.textplus}>
-                      <Text style={styles.text}>Sel</Text>
+                ) : null}
+              </View>
+              {/* ========================== GRAISSES SATUREES ====================== */}
+              <View style={styles.flex}>
+                {data.product.nutriments["saturated-fat_value"] > 4 &&
+                data.product.nutriments["saturated-fat_value"] < 7 ? (
+                  <View>
+                    <View style={styles.leaf}>
+                      <Ionicons name="ios-water" size={24} color="black" />
+                      <View style={styles.textplus}>
+                        <Text style={styles.text}>Graisses saturées</Text>
+                      </View>
                     </View>
-                  </View>
-                  <View style={styles.grammes}>
-                    <View style={styles.dispatch}>
-                      <Text>Peu de sel</Text>
-                    </View>
-                    <View style={styles.direction}>
-                      <Text style={styles.texte}>
-                        {data.product.nutriments.salt_100g.toFixed(2)} g
-                      </Text>
-                      <FontAwesome
-                        style={styles.texte}
-                        name="circle"
-                        size={24}
-                        color="green"
-                      />
-                      <TouchableOpacity onPress={() => {}}>
-                        <Ionicons
-                          name="ios-arrow-forward"
+                    <View style={styles.grammes}>
+                      <View style={styles.dispatch}>
+                        <Text>Un peu trop gras</Text>
+                      </View>
+                      <View style={styles.direction}>
+                        <Text style={styles.texte}>
+                          {data.product.nutriments[
+                            "saturated-fat_value"
+                          ].toFixed(2)}
+                          g
+                        </Text>
+                        <FontAwesome
+                          style={styles.texte}
+                          name="circle"
                           size={24}
-                          color="black"
+                          color="orange"
                         />
-                      </TouchableOpacity>
+                        <TouchableOpacity onPress={() => {}}>
+                          <Ionicons
+                            name="ios-arrow-forward"
+                            size={24}
+                            color="black"
+                          />
+                        </TouchableOpacity>
+                      </View>
                     </View>
+                    <View style={styles.sndview} />
                   </View>
-                  <View style={styles.sndview} />
-                </View>
-              ) : data.product.nutriments.salt_100g >= 0.46 &&
-                data.product.nutriments.salt_100g < 0.92 ? (
-                <View>
-                  <View style={styles.leaf}>
-                    <AntDesign name="dotchart" size={24} color="black" />
-                    <View style={styles.textplus}>
-                      <Text style={styles.text}>Sel</Text>
+                ) : data.product.nutriments["saturated-fat_value"] >= 7 ? (
+                  <View>
+                    <View style={styles.leaf}>
+                      <Ionicons name="ios-water" size={24} color="black" />
+                      <View style={styles.textplus}>
+                        <Text style={styles.text}>Graisses saturées</Text>
+                      </View>
                     </View>
-                  </View>
-                  <View style={styles.grammes}>
-                    <View style={styles.dispatch}>
-                      <Text>Faible impact</Text>
-                    </View>
-                    <View style={styles.direction}>
-                      <Text style={styles.texte}>
-                        {data.product.nutriments.salt_100g.toFixed(2)} g
-                      </Text>
-                      <FontAwesome
-                        style={styles.texte}
-                        name="circle"
-                        size={24}
-                        color="#5DCC71"
-                      />
-                      <TouchableOpacity onPress={() => {}}>
-                        <Ionicons
-                          name="ios-arrow-forward"
+                    <View style={styles.grammes}>
+                      <View style={styles.dispatch}>
+                        <Text>Trop gras</Text>
+                      </View>
+                      <View style={styles.direction}>
+                        <Text style={styles.texte}>
+                          {data.product.nutriments[
+                            "saturated-fat_value"
+                          ].toFixed(2)}
+                          g
+                        </Text>
+                        <FontAwesome
+                          style={styles.texte}
+                          name="circle"
                           size={24}
-                          color="black"
+                          color="red"
                         />
-                      </TouchableOpacity>
+                        <TouchableOpacity onPress={() => {}}>
+                          <Ionicons
+                            name="ios-arrow-forward"
+                            size={24}
+                            color="black"
+                          />
+                        </TouchableOpacity>
+                      </View>
                     </View>
+                    <View style={styles.sndview} />
                   </View>
-                  <View style={styles.sndview} />
-                </View>
-              ) : null}
+                ) : null}
+              </View>
+              {/* ==================================== SUCRE ================================= */}
+              <View style={styles.flex}>
+                {data.product.nutriments.sugars_100g > 18 &&
+                data.product.nutriments.sugars_100g < 31 ? (
+                  <View>
+                    <View style={styles.leaf}>
+                      <FontAwesome name="cubes" size={24} color="black" />
+                      <View style={styles.textplus}>
+                        <Text style={styles.text}>Sucre</Text>
+                      </View>
+                    </View>
+                    <View style={styles.grammes}>
+                      <View style={styles.dispatch}>
+                        <Text>Un peu trop de sucre</Text>
+                      </View>
+                      <View style={styles.direction}>
+                        <Text style={styles.texte}>
+                          {data.product.nutriments.sugars_100g.toFixed(2)} g
+                        </Text>
+                        <FontAwesome
+                          style={styles.texte}
+                          name="circle"
+                          size={24}
+                          color="orange"
+                        />
+                        <TouchableOpacity onPress={() => {}}>
+                          <Ionicons
+                            name="ios-arrow-forward"
+                            size={24}
+                            color="black"
+                          />
+                        </TouchableOpacity>
+                      </View>
+                    </View>
+                    <View style={styles.sndview} />
+                  </View>
+                ) : data.product.nutriments.sugars_100g >= 31 ? (
+                  <View>
+                    <View style={styles.leaf}>
+                      <FontAwesome name="cubes" size={24} color="black" />
+                      <View style={styles.textplus}>
+                        <Text style={styles.text}>Sucre</Text>
+                      </View>
+                    </View>
+                    <View style={styles.grammes}>
+                      <View style={styles.dispatch}>
+                        <Text>Trop sucré</Text>
+                      </View>
+                      <View style={styles.direction}>
+                        <Text style={styles.texte}>
+                          {data.product.nutriments.sugars_100g.toFixed(2)} g
+                        </Text>
+                        <FontAwesome
+                          style={styles.texte}
+                          name="circle"
+                          size={24}
+                          color="red"
+                        />
+                        <TouchableOpacity onPress={() => {}}>
+                          <Ionicons
+                            name="ios-arrow-forward"
+                            size={24}
+                            color="black"
+                          />
+                        </TouchableOpacity>
+                      </View>
+                    </View>
+                    <View style={styles.sndview} />
+                  </View>
+                ) : null}
+              </View>
+              {/* ========================================== SEL =================================== */}
+              <View style={styles.flex}>
+                {data.product.nutriments.salt_100g > 0.92 &&
+                data.product.nutriments.salt_100g < 1.62 ? (
+                  <View>
+                    <View style={styles.leaf}>
+                      <AntDesign name="dotchart" size={24} color="black" />
+                      <View style={styles.textplus}>
+                        <Text style={styles.text}>Sel</Text>
+                      </View>
+                    </View>
+                    <View style={styles.grammes}>
+                      <View style={styles.dispatch}>
+                        <Text>Un peu trop salé</Text>
+                      </View>
+                      <View style={styles.direction}>
+                        <Text style={styles.texte}>
+                          {data.product.nutriments.salt_100g.toFixed(2)} g
+                        </Text>
+                        <FontAwesome
+                          style={styles.texte}
+                          name="circle"
+                          size={24}
+                          color="orange"
+                        />
+                        <TouchableOpacity onPress={() => {}}>
+                          <Ionicons
+                            name="ios-arrow-forward"
+                            size={24}
+                            color="black"
+                          />
+                        </TouchableOpacity>
+                      </View>
+                    </View>
+                    <View style={styles.sndview} />
+                  </View>
+                ) : data.product.nutriments.salt_100g > 1.62 ? (
+                  <View>
+                    <View style={styles.leaf}>
+                      <AntDesign name="dotchart" size={24} color="black" />
+                      <View style={styles.textplus}>
+                        <Text style={styles.text}>Sel</Text>
+                      </View>
+                    </View>
+                    <View style={styles.grammes}>
+                      <View style={styles.dispatch}>
+                        <Text>Trop salé</Text>
+                      </View>
+                      <View style={styles.direction}>
+                        <Text style={styles.texte}>
+                          {data.product.nutriments.salt_100g.toFixed(2)} g
+                        </Text>
+                        <FontAwesome
+                          style={styles.texte}
+                          name="circle"
+                          size={24}
+                          color="red"
+                        />
+                        <TouchableOpacity onPress={() => {}}>
+                          <Ionicons
+                            name="ios-arrow-forward"
+                            size={24}
+                            color="black"
+                          />
+                        </TouchableOpacity>
+                      </View>
+                    </View>
+                    <View style={styles.sndview} />
+                  </View>
+                ) : null}
+              </View>
             </View>
           </View>
-          {/* ++++++++++++++++++++++++++++++++++++++++++++++++DEFAUTS++++++++++++++++++++++++++++++++++++++++++++++++ */}
-
-          <View style={styles.description}>
-            <View style={styles.quality}>
-              <View>
-                <Text style={styles.qualité}>Défauts</Text>
-              </View>
-              <View>
-                <Text>pour 100g</Text>
-              </View>
-            </View>
-
-            {/* =============================== CALORIES ========================= */}
-            <View style={styles.flex}>
-              {data.product.nutriments["energy-kcal_100g"] > 360 &&
-              data.product.nutriments["energy-kcal_100g"] < 560 ? (
-                <View>
-                  <View style={styles.leaf}>
-                    <Octicons name="flame" size={24} color="black" />
-                    <View style={styles.textplus}>
-                      <Text style={styles.text}>Calories</Text>
-                    </View>
-                  </View>
-                  <View style={styles.grammes}>
-                    <View style={styles.dispatch}>
-                      <Text>Un peu trop calorique</Text>
-                    </View>
-                    <View style={styles.direction}>
-                      <Text style={styles.texte}>
-                        {data.product.nutriments["energy-kcal_100g"].toFixed(
-                          2
-                        ) || data.product.nutriments.energy_value.toFixed(2)}
-                        kCal
-                      </Text>
-                      <FontAwesome
-                        style={styles.texte}
-                        name="circle"
-                        size={24}
-                        color="orange"
-                      />
-                      <TouchableOpacity onPress={() => {}}>
-                        <Ionicons
-                          name="ios-arrow-forward"
-                          size={24}
-                          color="black"
-                        />
-                      </TouchableOpacity>
-                    </View>
-                  </View>
-                  <View style={styles.sndview} />
-                </View>
-              ) : data.product.nutriments["energy-kcal_100g"] >= 560 ? (
-                <View>
-                  <View style={styles.leaf}>
-                    <Octicons name="flame" size={24} color="black" />
-                    <View style={styles.textplus}>
-                      <Text style={styles.text}>Calories</Text>
-                    </View>
-                  </View>
-                  <View style={styles.grammes}>
-                    <View style={styles.dispatch}>
-                      <Text>Trop calorique</Text>
-                    </View>
-                    <View style={styles.direction}>
-                      <Text style={styles.texte}>
-                        {data.product.nutriments["energy-kcal_100g"].toFixed(
-                          2
-                        ) || data.product.nutriments.energy_value.toFixed(2)}
-                        kCal
-                      </Text>
-                      <FontAwesome
-                        style={styles.texte}
-                        name="circle"
-                        size={24}
-                        color="red"
-                      />
-                      <TouchableOpacity onPress={() => {}}>
-                        <Ionicons
-                          name="ios-arrow-forward"
-                          size={24}
-                          color="black"
-                        />
-                      </TouchableOpacity>
-                    </View>
-                  </View>
-                  <View style={styles.sndview} />
-                </View>
-              ) : null}
-            </View>
-            {/* ========================== GRAISSES SATUREES ====================== */}
-            <View style={styles.flex}>
-              {data.product.nutriments["saturated-fat_value"] > 4 &&
-              data.product.nutriments["saturated-fat_value"] < 7 ? (
-                <View>
-                  <View style={styles.leaf}>
-                    <Ionicons name="ios-water" size={24} color="black" />
-                    <View style={styles.textplus}>
-                      <Text style={styles.text}>Graisses saturées</Text>
-                    </View>
-                  </View>
-                  <View style={styles.grammes}>
-                    <View style={styles.dispatch}>
-                      <Text>Un peu trop gras</Text>
-                    </View>
-                    <View style={styles.direction}>
-                      <Text style={styles.texte}>
-                        {data.product.nutriments["saturated-fat_value"].toFixed(
-                          2
-                        )}
-                        g
-                      </Text>
-                      <FontAwesome
-                        style={styles.texte}
-                        name="circle"
-                        size={24}
-                        color="orange"
-                      />
-                      <TouchableOpacity onPress={() => {}}>
-                        <Ionicons
-                          name="ios-arrow-forward"
-                          size={24}
-                          color="black"
-                        />
-                      </TouchableOpacity>
-                    </View>
-                  </View>
-                  <View style={styles.sndview} />
-                </View>
-              ) : data.product.nutriments["saturated-fat_value"] >= 7 ? (
-                <View>
-                  <View style={styles.leaf}>
-                    <Ionicons name="ios-water" size={24} color="black" />
-                    <View style={styles.textplus}>
-                      <Text style={styles.text}>Graisses saturées</Text>
-                    </View>
-                  </View>
-                  <View style={styles.grammes}>
-                    <View style={styles.dispatch}>
-                      <Text>Trop gras</Text>
-                    </View>
-                    <View style={styles.direction}>
-                      <Text style={styles.texte}>
-                        {data.product.nutriments["saturated-fat_value"].toFixed(
-                          2
-                        )}
-                        g
-                      </Text>
-                      <FontAwesome
-                        style={styles.texte}
-                        name="circle"
-                        size={24}
-                        color="red"
-                      />
-                      <TouchableOpacity onPress={() => {}}>
-                        <Ionicons
-                          name="ios-arrow-forward"
-                          size={24}
-                          color="black"
-                        />
-                      </TouchableOpacity>
-                    </View>
-                  </View>
-                  <View style={styles.sndview} />
-                </View>
-              ) : null}
-            </View>
-            {/* ==================================== SUCRE ================================= */}
-            <View style={styles.flex}>
-              {data.product.nutriments.sugars_100g > 18 &&
-              data.product.nutriments.sugars_100g < 31 ? (
-                <View>
-                  <View style={styles.leaf}>
-                    <FontAwesome name="cubes" size={24} color="black" />
-                    <View style={styles.textplus}>
-                      <Text style={styles.text}>Sucre</Text>
-                    </View>
-                  </View>
-                  <View style={styles.grammes}>
-                    <View style={styles.dispatch}>
-                      <Text>Un peu trop de sucre</Text>
-                    </View>
-                    <View style={styles.direction}>
-                      <Text style={styles.texte}>
-                        {data.product.nutriments.sugars_100g.toFixed(2)} g
-                      </Text>
-                      <FontAwesome
-                        style={styles.texte}
-                        name="circle"
-                        size={24}
-                        color="orange"
-                      />
-                      <TouchableOpacity onPress={() => {}}>
-                        <Ionicons
-                          name="ios-arrow-forward"
-                          size={24}
-                          color="black"
-                        />
-                      </TouchableOpacity>
-                    </View>
-                  </View>
-                  <View style={styles.sndview} />
-                </View>
-              ) : data.product.nutriments.sugars_100g >= 31 ? (
-                <View>
-                  <View style={styles.leaf}>
-                    <FontAwesome name="cubes" size={24} color="black" />
-                    <View style={styles.textplus}>
-                      <Text style={styles.text}>Sucre</Text>
-                    </View>
-                  </View>
-                  <View style={styles.grammes}>
-                    <View style={styles.dispatch}>
-                      <Text>Trop sucré</Text>
-                    </View>
-                    <View style={styles.direction}>
-                      <Text style={styles.texte}>
-                        {data.product.nutriments.sugars_100g.toFixed(2)} g
-                      </Text>
-                      <FontAwesome
-                        style={styles.texte}
-                        name="circle"
-                        size={24}
-                        color="red"
-                      />
-                      <TouchableOpacity onPress={() => {}}>
-                        <Ionicons
-                          name="ios-arrow-forward"
-                          size={24}
-                          color="black"
-                        />
-                      </TouchableOpacity>
-                    </View>
-                  </View>
-                  <View style={styles.sndview} />
-                </View>
-              ) : null}
-            </View>
-            {/* ========================================== SEL =================================== */}
-            <View style={styles.flex}>
-              {data.product.nutriments.salt_100g > 0.92 &&
-              data.product.nutriments.salt_100g < 1.62 ? (
-                <View>
-                  <View style={styles.leaf}>
-                    <AntDesign name="dotchart" size={24} color="black" />
-                    <View style={styles.textplus}>
-                      <Text style={styles.text}>Sel</Text>
-                    </View>
-                  </View>
-                  <View style={styles.grammes}>
-                    <View style={styles.dispatch}>
-                      <Text>Un peu trop salé</Text>
-                    </View>
-                    <View style={styles.direction}>
-                      <Text style={styles.texte}>
-                        {data.product.nutriments.salt_100g.toFixed(2)} g
-                      </Text>
-                      <FontAwesome
-                        style={styles.texte}
-                        name="circle"
-                        size={24}
-                        color="orange"
-                      />
-                      <TouchableOpacity onPress={() => {}}>
-                        <Ionicons
-                          name="ios-arrow-forward"
-                          size={24}
-                          color="black"
-                        />
-                      </TouchableOpacity>
-                    </View>
-                  </View>
-                  <View style={styles.sndview} />
-                </View>
-              ) : data.product.nutriments.salt_100g > 1.62 ? (
-                <View>
-                  <View style={styles.leaf}>
-                    <AntDesign name="dotchart" size={24} color="black" />
-                    <View style={styles.textplus}>
-                      <Text style={styles.text}>Sel</Text>
-                    </View>
-                  </View>
-                  <View style={styles.grammes}>
-                    <View style={styles.dispatch}>
-                      <Text>Trop salé</Text>
-                    </View>
-                    <View style={styles.direction}>
-                      <Text style={styles.texte}>
-                        {data.product.nutriments.salt_100g.toFixed(2)} g
-                      </Text>
-                      <FontAwesome
-                        style={styles.texte}
-                        name="circle"
-                        size={24}
-                        color="red"
-                      />
-                      <TouchableOpacity onPress={() => {}}>
-                        <Ionicons
-                          name="ios-arrow-forward"
-                          size={24}
-                          color="black"
-                        />
-                      </TouchableOpacity>
-                    </View>
-                  </View>
-                  <View style={styles.sndview} />
-                </View>
-              ) : null}
-            </View>
-          </View>
-        </View>
-        {/* </View> */}
-      </ScrollView>
+        </ScrollView>
+      )}
     </SafeAreaView>
   );
 }
@@ -1146,7 +1130,6 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   description: {
-    // flex: 1,
     marginTop: 10,
     backgroundColor: "white",
     padding: 20,
@@ -1167,7 +1150,6 @@ const styles = StyleSheet.create({
   text: { fontSize: 17, fontWeight: "bold" },
 
   leaf: {
-    // flex: 1,
     marginRight: 20,
     marginTop: 20,
     flexDirection: "row",
@@ -1184,27 +1166,18 @@ const styles = StyleSheet.create({
   },
   grammes: {
     justifyContent: "space-between",
-    // flex: 1,
     flexDirection: "row",
-    // marginLeft: 33,
     alignItems: "center",
     // backgroundColor: "red",
   },
   dispatch: {
-    // flex: 1,
     justifyContent: "space-between",
     flexDirection: "row",
   },
   texte: {
     marginRight: 10,
   },
-  espace: {
-    // marginLeft: 20,
-  },
-  flex: {
-    // flex: 1,
-    // backgroundColor: "orange",
-  },
+
   direction: {
     flexDirection: "row",
     alignItems: "center",

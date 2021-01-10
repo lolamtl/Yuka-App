@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { useNavigation, useRoute } from "@react-navigation/core";
-import { FloatingAction } from "react-native-floating-action";
-import { Entypo } from "@expo/vector-icons";
 import { FontAwesome } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-community/async-storage";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
@@ -12,22 +10,13 @@ import {
   StyleSheet,
   ScrollView,
   FlatList,
-  ActivityIndicator,
   Image,
   Platform,
 } from "react-native";
-import Constants from "expo-constants";
 
-import axios from "axios";
-
-export default function HomeScreen(props) {
+export default function HomeScreen() {
   const navigation = useNavigation();
-  const { product, setProduct } = props;
-  const [data, setData] = useState();
   const [products, setProducts] = useState();
-  const { params } = useRoute();
-  // console.log(props.product.code);
-  // console.log(Platform);
 
   useEffect(() => {
     const saveProducts = async () => {
@@ -52,7 +41,7 @@ export default function HomeScreen(props) {
                 });
               }}
             >
-              {item.id && item.image && item.name && item.brand ? (
+              {item.id && item.name ? (
                 <View style={styles.view}>
                   <View>
                     <Image
@@ -75,10 +64,6 @@ export default function HomeScreen(props) {
                               color="green"
                             />
                             <View style={styles.note}>
-                              <Text style={styles.score}>
-                                {item.note}/100
-                                <Text>(A REVOIR)</Text>
-                              </Text>
                               <Text>Excellent!</Text>
                             </View>
                           </View>
@@ -90,12 +75,6 @@ export default function HomeScreen(props) {
                               color="#5DCC71"
                             />
                             <View style={styles.note}>
-                              <Text style={styles.score}>
-                                {item.note}
-                                {/* // data.product.ecoscore_score} */}
-                                /100
-                                <Text>(A REVOIR)</Text>
-                              </Text>
                               <Text>Trés bon</Text>
                             </View>
                           </View>
@@ -107,12 +86,6 @@ export default function HomeScreen(props) {
                               color="yellow"
                             />
                             <View style={styles.note}>
-                              <Text style={styles.score}>
-                                {item.note.toFixed(2)}
-                                {/* data.product.ecoscore_score} */}
-                                /100
-                                <Text>(A REVOIR)</Text>
-                              </Text>
                               <Text>Bon</Text>
                             </View>
                           </View>
@@ -124,10 +97,6 @@ export default function HomeScreen(props) {
                               color="orange"
                             />
                             <View style={styles.note}>
-                              <Text style={styles.score}>
-                                {item.note}/100
-                                <Text>(A REVOIR)</Text>
-                              </Text>
                               <Text>Médiocre</Text>
                             </View>
                           </View>
@@ -139,23 +108,19 @@ export default function HomeScreen(props) {
                               color="#D50506"
                             />
                             <View style={styles.note}>
-                              <Text style={styles.score}>
-                                {item.note}/100
-                                <Text>(A REVOIR)</Text>
-                              </Text>
                               <Text>Mauvais</Text>
                             </View>
                           </View>
                         ) : item.nutriScore === "no_value" ||
                           item.ecoscore === undefined ? (
-                          <View>
+                          <View style={styles.grade}>
                             <FontAwesome
                               name="circle"
                               size={24}
                               color="#D1D1D1"
                             />
-                            <Text>
-                              Pas de note pour ce produit pour l'instant
+                            <Text style={styles.note}>
+                              Pas de nutriscore pour ce produit pour l'instant
                             </Text>
                           </View>
                         ) : null}
@@ -167,20 +132,19 @@ export default function HomeScreen(props) {
             </TouchableOpacity>
           )}
         />
-
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => {
-            navigation.navigate("Caméra");
-          }}
-        >
-          <MaterialCommunityIcons
-            name="barcode-scan"
-            size={30}
-            color="white"
-          ></MaterialCommunityIcons>
-        </TouchableOpacity>
       </ScrollView>
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() => {
+          navigation.navigate("Caméra");
+        }}
+      >
+        <MaterialCommunityIcons
+          name="barcode-scan"
+          size={30}
+          color="white"
+        ></MaterialCommunityIcons>
+      </TouchableOpacity>
     </>
   );
 }

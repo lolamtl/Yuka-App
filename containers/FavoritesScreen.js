@@ -1,24 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { useNavigation, useRoute } from "@react-navigation/core";
-import {
-  Button,
-  Text,
-  View,
-  StyleSheet,
-  ScrollView,
-  Image,
-  ActivityIndicator,
-} from "react-native";
+import { useNavigation } from "@react-navigation/core";
+import { Text, View, StyleSheet, ScrollView, Image } from "react-native";
 import AsyncStorage from "@react-native-community/async-storage";
 import { FlatList, TouchableOpacity } from "react-native-gesture-handler";
 import { FontAwesome } from "@expo/vector-icons";
-import axios from "axios";
 
 export default function FavoritesScreen() {
   const navigation = useNavigation();
   const [products, setProducts] = useState();
-  const { params } = useRoute();
-  // const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const saveProducts = async () => {
@@ -31,14 +20,6 @@ export default function FavoritesScreen() {
   }, []);
 
   return (
-    //   <View>
-    //     <ActivityIndicator
-    //       size="large"
-    //       color="#FF9100"
-    //       style={{ paddingTop: 30 }}
-    //     />
-    //   </View>
-    // ) : (
     <>
       <ScrollView style={{ flex: 1 }}>
         <FlatList
@@ -75,10 +56,6 @@ export default function FavoritesScreen() {
                               color="green"
                             />
                             <View style={styles.note}>
-                              <Text style={styles.score}>
-                                {item.note}/100
-                                <Text>(A REVOIR)</Text>
-                              </Text>
                               <Text>Excellent!</Text>
                             </View>
                           </View>
@@ -90,12 +67,6 @@ export default function FavoritesScreen() {
                               color="#5DCC71"
                             />
                             <View style={styles.note}>
-                              <Text style={styles.score}>
-                                {item.note}
-                                {/* // data.product.ecoscore_score} */}
-                                /100
-                                <Text>(A REVOIR)</Text>
-                              </Text>
                               <Text>Trés bon</Text>
                             </View>
                           </View>
@@ -107,12 +78,6 @@ export default function FavoritesScreen() {
                               color="yellow"
                             />
                             <View style={styles.note}>
-                              <Text style={styles.score}>
-                                {item.note.toFixed(2)}
-                                {/* data.product.ecoscore_score} */}
-                                /100
-                                <Text>(A REVOIR)</Text>
-                              </Text>
                               <Text>Bon</Text>
                             </View>
                           </View>
@@ -124,10 +89,6 @@ export default function FavoritesScreen() {
                               color="orange"
                             />
                             <View style={styles.note}>
-                              <Text style={styles.score}>
-                                {item.note}/100
-                                <Text>(A REVOIR)</Text>
-                              </Text>
                               <Text>Médiocre</Text>
                             </View>
                           </View>
@@ -139,23 +100,19 @@ export default function FavoritesScreen() {
                               color="#D50506"
                             />
                             <View style={styles.note}>
-                              <Text style={styles.score}>
-                                {item.note}/100
-                                <Text>(A REVOIR)</Text>
-                              </Text>
                               <Text>Mauvais</Text>
                             </View>
                           </View>
                         ) : item.nutriScore === "no_value" ||
                           item.ecoscore === undefined ? (
-                          <View>
+                          <View style={styles.grade}>
                             <FontAwesome
                               name="circle"
                               size={24}
                               color="#D1D1D1"
                             />
-                            <Text>
-                              Pas de note pour ce produit pour l'instant
+                            <Text style={styles.note}>
+                              Pas de nutriscore pour ce produit pour l'instant
                             </Text>
                           </View>
                         ) : null}
@@ -197,7 +154,6 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   description: {
-    // flex: 1,
     marginTop: 10,
     backgroundColor: "white",
     padding: 20,
