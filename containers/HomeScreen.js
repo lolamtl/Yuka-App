@@ -157,7 +157,6 @@ export default function HomeScreen() {
                 style={{
                   color: "green",
                   fontStyle: "italic",
-                  textAlign: "center",
                 }}
               >
                 Commencer à scanner vos produits préférés
@@ -168,7 +167,11 @@ export default function HomeScreen() {
                 uri:
                   "https://media.giphy.com/media/jQKI4boQ0gE62vKrEC/giphy.gif",
               }}
-              style={{ width: 550, height: 300, marginTop: 300 }}
+              style={{
+                width: 550,
+                height: 300,
+                marginTop: Platform.OS === "android" ? 150 : 250,
+              }}
             ></Image>
           </View>
         )}
